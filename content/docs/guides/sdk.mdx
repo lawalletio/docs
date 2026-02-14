@@ -1,0 +1,265 @@
+---
+title: "Client SDK & React Hooks"
+description: "TypeScript SDK and React Hooks for interacting with the LaWallet NWC API."
+---
+
+## Overview
+
+Two packages provide typed access to the LaWallet NWC backend:
+
+- **Client SDK** — standalone TypeScript client for all API endpoints
+- **React Hooks** — React hooks built on top of the SDK with caching and state management
+
+---
+
+## TypeScript Client SDK
+
+### Package
+
+- Published as standalone npm package
+- Auto-generated TypeScript types from API schemas
+- Unit tests with MSW mocks
+
+### API Coverage
+
+- **Lightning Address**: create, lookup, update, delete
+- **Alias/Redirect**: set target, remove, get status
+- **NWC Connection**: connect, disconnect, status
+- **Authentication**: JWT login, Nostr login, refresh, revoke
+- **Webhooks**: subscribe, unsubscribe, list
+- **Wallet**: balance, send, receive
+
+### Delivered
+
+- Month 2: Core SDK (auth, addresses, redirect, NWC, webhooks)
+- Month 3: Courtesy NWC methods
+- Month 5: LUD-21/22, redirect, zap methods
+- Month 6: Full documentation + API reference
+
+---
+
+## React Hooks Package
+
+### Package
+
+- Published as `@lawallet-nwc/react`
+- Built on top of Client SDK
+- SWR or React Query for caching + revalidation
+- Loading, error, and success states on every hook
+- TypeScript generics for type-safe responses
+
+### Hooks Reference
+
+| Hook | Purpose | Month |
+|------|---------|-------|
+| `useAddress` | CRUD single lightning address (including redirect config) | 2 |
+| `useAddresses` | List/search/filter with pagination | 2 |
+| `useNWCConnection` | Connect, disconnect, status polling | 2 |
+| `usePayments` | Payment history, real-time updates | 2 |
+| `useAuth` | JWT + Nostr login, session state, logout | 2 |
+| `useWebhooks` | Subscribe, unsubscribe, list active hooks | 2 |
+| `useWallet` | Balance, send, receive, NWC status | 2 |
+| `useCourtesyNWC` | Provision/revoke courtesy NWC from proxy | 3 |
+| `useZap` | Send/receive zaps, verify receipts | 5 |
+| `useVerify` | Payment settlement status (LUD-21) | 5 |
+| `useRedirect` | Address alias/redirect configuration | 5 |
+
+### Interactive Example: useAddress Hook
+
+Try editing the code below to see how the `useAddress` hook works:
+
+<SandpackLive
+  template="react-ts"
+  files={{
+    "/App.tsx": `import { useState } from "react";
+
+// Simulated useAddress hook (demonstrates the API pattern)
+function useAddress(username: string) {
+  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState<any>(null);
+
+  const lookup = async () => {
+    setLoading(true);
+    // Simulates API call to GET /api/addresses/:username
+    await new Promise(r => setTimeout(r, 800));
+    setData({
+      username,
+      lightningAddress: username + "@yourdomain.com",
+      nwcStatus: "connected",
+      createdAt: new Date().toISOString(),
+    });
+    setLoading(false);
+  };
+
+  return { data, loading, lookup };
+}
+
+export default function App() {
+  const [username, setUsername] = useState("alice");
+  const { data, loading, lookup } = useAddress(username);
+
+  return (
+    <div style={{ fontFamily: "system-ui", padding: 20 }}>
+      <h2>⚡ useAddress Hook Demo</h2>
+      <div style={{ marginBottom: 16 }}>
+        <input
+          value={username}
+          onChange={e => setUsername(e.target.value)}
+          placeholder="Enter username..."
+          style={{ padding: "8px 12px", borderRadius: 6, border: "1px solid #ccc", marginRight: 8 }}
+        />
+        <button
+          onClick={lookup}
+          disabled={loading}
+          style={{
+            padding: "8px 16px",
+            borderRadius: 6,
+            background: "#7c3aed",
+            color: "white",
+            border: "none",
+            cursor: loading ? "wait" : "pointer",
+          }}
+        >
+          {loading ? "Looking up..." : "Lookup Address"}
+        </button>
+      </div>
+      {data && (
+        <pre style={{
+          background: "#1e1e2e",
+          color: "#a6e3a1",
+          padding: 16,
+          borderRadius: 8,
+          fontSize: 13,
+        }}>
+{JSON.stringify(data, null, 2)}
+        </pre>
+      )}
+    </div>
+  );
+}`,
+  }}
+/>
+
+### Interactive Example: useAuth Hook
+
+<SandpackLive
+  template="react-ts"
+  files={{
+    "/App.tsx": `import { useState } from "react";
+
+type AuthState = {
+  isAuthenticated: boolean;
+  pubkey: string | null;
+  role: string | null;
+  token: string | null;
+};
+
+// Simulated useAuth hook
+function useAuth() {
+  const [state, setState] = useState<AuthState>({
+    isAuthenticated: false,
+    pubkey: null,
+    role: null,
+    token: null,
+  });
+  const [loading, setLoading] = useState(false);
+
+  const login = async (pubkey: string) => {
+    setLoading(true);
+    // Simulates NIP-98 -> JWT flow
+    await new Promise(r => setTimeout(r, 1000));
+    setState({
+      isAuthenticated: true,
+      pubkey,
+      role: "user",
+      token: "eyJhbGciOiJIUzI1NiIs...",
+    });
+    setLoading(false);
+  };
+
+  const logout = () => {
+    setState({ isAuthenticated: false, pubkey: null, role: null, token: null });
+  };
+
+  return { ...state, loading, login, logout };
+}
+
+export default function App() {
+  const auth = useAuth();
+
+  return (
+    <div style={{ fontFamily: "system-ui", padding: 20 }}>
+      <h2>🔐 useAuth Hook Demo</h2>
+      <div style={{
+        padding: 16,
+        borderRadius: 8,
+        background: auth.isAuthenticated ? "#dcfce7" : "#fef3c7",
+        marginBottom: 16,
+      }}>
+        <strong>Status:</strong>{" "}
+        {auth.isAuthenticated ? "✅ Authenticated" : "⚠️ Not authenticated"}
+      </div>
+
+      {!auth.isAuthenticated ? (
+        <button
+          onClick={() => auth.login("npub1abc...xyz")}
+          disabled={auth.loading}
+          style={{
+            padding: "10px 20px",
+            borderRadius: 8,
+            background: "#f97316",
+            color: "white",
+            border: "none",
+            cursor: auth.loading ? "wait" : "pointer",
+            fontSize: 14,
+          }}
+        >
+          {auth.loading ? "Signing in with Nostr..." : "Login with Nostr (NIP-98)"}
+        </button>
+      ) : (
+        <div>
+          <pre style={{
+            background: "#1e1e2e",
+            color: "#89b4fa",
+            padding: 16,
+            borderRadius: 8,
+            fontSize: 13,
+          }}>
+{JSON.stringify({
+  pubkey: auth.pubkey,
+  role: auth.role,
+  token: auth.token?.slice(0, 20) + "...",
+}, null, 2)}
+          </pre>
+          <button
+            onClick={auth.logout}
+            style={{
+              padding: "8px 16px",
+              borderRadius: 6,
+              background: "#ef4444",
+              color: "white",
+              border: "none",
+              cursor: "pointer",
+              marginTop: 8,
+            }}
+          >
+            Logout
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}`,
+  }}
+/>
+
+---
+
+## Lifecycle
+
+| Month | SDK Milestone | Hooks Milestone |
+|-------|---------------|-----------------|
+| 2 | Core: auth, addresses, redirect, NWC, webhooks. npm publish. | 7 base hooks. Published as @lawallet-nwc/react. |
+| 3 | Frontend + Courtesy NWC Proxy consume SDK. | Add `useCourtesyNWC`. |
+| 5 | Add LUD-21/22, redirect, zap methods. | Add `useZap`, `useVerify`, `useRedirect`. Update `useWebhooks`. |
+| 6 | Full docs + API reference. | Full docs + usage examples. |
