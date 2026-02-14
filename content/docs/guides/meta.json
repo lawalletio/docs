@@ -1,1 +1,1 @@
-{ "title": "Guides", "pages": ["sdk", "jwt-authentication", "testing"] }
+{ "title": "Guides", "pages": ["index", "sdk", "jwt-authentication", "testing"] }
