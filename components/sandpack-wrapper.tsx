@@ -3,17 +3,49 @@
 import {
   Sandpack,
   type SandpackProps,
+  type SandpackTheme,
   SandpackProvider,
   SandpackLayout,
   SandpackCodeEditor,
   SandpackPreview,
 } from "@codesandbox/sandpack-react";
-import { aquaBlue } from "@codesandbox/sandpack-themes";
+
+const lawalletTheme: SandpackTheme = {
+  colors: {
+    surface1: "#0A0A0F",
+    surface2: "#111118",
+    surface3: "#1e1e2a",
+    clickable: "#8a8a9a",
+    base: "#e0e0e8",
+    disabled: "#4a4a5a",
+    hover: "#F5A623",
+    accent: "#F5A623",
+    error: "#E53935",
+    errorSurface: "#2a1010",
+  },
+  syntax: {
+    plain: "#e0e0e8",
+    comment: { color: "#6a6a7a", fontStyle: "italic" },
+    keyword: "#F5A623",
+    tag: "#26A69A",
+    punctuation: "#8a8a9a",
+    definition: "#4DB6AC",
+    property: "#FFD580",
+    static: "#E53935",
+    string: "#26A69A",
+  },
+  font: {
+    body: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+    mono: '"Fira Code", "JetBrains Mono", "SF Mono", monospace',
+    size: "13px",
+    lineHeight: "20px",
+  },
+};
 
 export function SandpackExample(props: SandpackProps) {
   return (
     <Sandpack
-      theme={aquaBlue}
+      theme={lawalletTheme}
       options={{
         showLineNumbers: true,
         showTabs: true,
@@ -39,7 +71,7 @@ export function SandpackLive({
   return (
     <SandpackProvider
       template={template}
-      theme={aquaBlue}
+      theme={lawalletTheme}
       files={files}
       customSetup={dependencies ? { dependencies } : undefined}
     >
@@ -65,7 +97,7 @@ export function SandpackCodeOnly({
   return (
     <Sandpack
       template={template}
-      theme={aquaBlue}
+      theme={lawalletTheme}
       files={files}
       options={{
         showLineNumbers: true,
