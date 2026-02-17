@@ -10,7 +10,7 @@ description: "6-month development timeline for LaWallet NWC, funded by OpenSats.
 | 1 | Foundation | **Completed** | Testing infra, error handling, config, logging, auth (JWT+RBAC), security middleware, validation, Next.js 16 |
 | 2 | Foundation | **In Progress** | GitHub Actions CI/CD, TypeScript Client SDK, React Hooks package, hook tests |
 | 3 | Enhancement | Planned | Admin Dashboard enhancement, NIP-07/NIP-46 Nostr login, frontend cleanup, Playwright E2E |
-| 4 | Enhancement | Planned | **User Dashboard** (profile, npub/NIP-05, preferences), Courtesy NWC Proxy (new container), wallet polish, white-label |
+| 4 | Enhancement | Planned | **User Dashboard** (profile, npub/NIP-05, preferences), Courtesy NWC via [lncurl](https://github.com/rolznz/lncurl), wallet polish, white-label |
 | 5 | Expansion | Planned | LUD-16/21/22, NIP-57 zaps, NWC Payment Listener (new container), alias/redirect, SDK update |
 | 6 | Expansion | Planned | Documentation, deployment (Vercel/Netlify/Umbrel/Start9/Docker), security prep |
 
@@ -54,10 +54,10 @@ Backend auth already complete; focus on frontend:
 - Frontend component cleanup and SDK hook consumption
 - Playwright multi-browser E2E testing
 
-### Month 4: User Dashboard + Courtesy NWC Proxy + Wallet Polish
+### Month 4: User Dashboard + Courtesy NWC (lncurl) + Wallet Polish
 
 - **User Dashboard**: profile, npub/NIP-05 setup, address config, redirect management, NWC connection, preferences
-- Courtesy NWC Proxy service (new container, 5 provider adapters)
+- Courtesy NWC via [lncurl](https://github.com/rolznz/lncurl) integration (no custom proxy container needed)
 - Wallet polish: payment history, receive interface, improved NWC flow
 - White-label customization + customizable landing page
 - E2E continued
@@ -119,7 +119,7 @@ Understanding the current state helps contextualize the roadmap:
 | Address redirect | -- | 5 |
 | Address management (admin) | -- | 3 |
 | User dashboard + npub | -- | 4 |
-| Courtesy NWC (Alby, LNBits, etc.) | -- | 4 |
+| Courtesy NWC (via lncurl) | -- | 4 |
 
 ---
 
@@ -127,5 +127,5 @@ Understanding the current state helps contextualize the roadmap:
 
 | Month | Container | Service |
 |-------|-----------|---------|
-| 4 | `lawallet-nwc-proxy` | Courtesy NWC Proxy |
+| 4 | External ([lncurl](https://github.com/rolznz/lncurl)) | Courtesy NWC wallets |
 | 5 | `lawallet-listener` | NWC Payment Listener |

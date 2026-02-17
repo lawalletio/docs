@@ -15,7 +15,7 @@ Finalize all documentation, configure deployment targets, and prepare the codeba
 
 ## Goals
 
-- Create comprehensive documentation for API, codebase, and all 3 services
+- Create comprehensive documentation for API, codebase, and all services
 - Configure deployment for Vercel, Netlify, Umbrel, Start9, Docker
 - Prepare for security audit
 - Finalize SDK and Hooks documentation
@@ -36,7 +36,7 @@ Finalize all documentation, configure deployment targets, and prepare the codeba
 
 ### ARCHITECTURE.md (Expand Existing)
 
-- System diagrams showing 3 independent services
+- System diagrams showing 2 independent services + lncurl
 - Data flow for payments (NWC and alias/redirect)
 - Address resolution priority logic
 - Service communication patterns
@@ -51,16 +51,16 @@ Finalize all documentation, configure deployment targets, and prepare the codeba
 
 ### Environment Variable Reference
 
-- Complete reference for all 3 services
+- Complete reference for all services
 - lawallet-web: 30+ variables (already validated by Zod)
 - lawallet-listener variables
-- lawallet-nwc-proxy variables
+- lncurl configuration variables (`LNCURL_URL`, etc.)
 - Required vs optional, defaults, examples
 
 ### Service Guides
 
 - NWC Payment Listener: setup, configuration, monitoring, troubleshooting
-- Courtesy NWC Proxy: setup, provider configuration, adding new providers
+- Courtesy NWC (lncurl): setup, self-hosting, configuration
 
 ---
 
@@ -83,7 +83,7 @@ Finalize all documentation, configure deployment targets, and prepare the codeba
 - `vercel.json` configuration (already exists, validate)
 - Environment variable mapping
 - One-click deploy button
-- Note: Next.js app only; Listener + Proxy deployed separately
+- Note: Next.js app only; Listener deployed separately, lncurl is external
 
 ### Netlify
 
@@ -94,20 +94,20 @@ Finalize all documentation, configure deployment targets, and prepare the codeba
 ### Umbrel
 
 - Updated `umbrel-app-store` package
-- All 3 containers included
+- Web + Listener containers included
 - Comprehensive configuration options
 - Installation documentation
 
 ### Start9
 
 - Embassy service wrapper
-- Manifest with all 3 services
+- Manifest with web + listener services
 - Health checks
 - Submit to Start9 registry
 
 ### Docker Compose
 
-- Production `docker-compose.yml` with 3 independent containers
+- Production `docker-compose.yml` with 2 independent containers
 - Reverse proxy configuration (Traefik or nginx)
 - SSL/TLS setup guide
 - Backup strategy documentation
@@ -144,12 +144,12 @@ Finalize all documentation, configure deployment targets, and prepare the codeba
 | Deliverable | Criteria | Priority |
 |-------------|----------|----------|
 | API docs | OpenAPI spec complete, interactive docs deployed | P0 |
-| ARCHITECTURE.md | Diagrams, data flow, all 3 services documented | P0 |
+| ARCHITECTURE.md | Diagrams, data flow, all services + lncurl documented | P0 |
 | CONTRIBUTING.md | Setup guide, standards, PR process | P0 |
 | Vercel config | One-click deploy working | P1 |
 | Netlify config | Deploy guide working | P1 |
-| Umbrel package | All 3 containers, installable from app store | P0 |
+| Umbrel package | Web + Listener containers, installable from app store | P0 |
 | Start9 package | Embassy package submitted | P1 |
-| Docker Compose | All 3 containers running with reverse proxy | P0 |
+| Docker Compose | Web + Listener containers running with reverse proxy | P0 |
 | Security docs | Threat model, crypto operations documented | P1 |
 | SDK/Hooks docs | Full API reference, usage examples | P1 |

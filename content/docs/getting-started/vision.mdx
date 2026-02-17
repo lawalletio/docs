@@ -45,12 +45,12 @@ Point your domain to LaWallet NWC and you're live. One-click deploy on Vercel. D
 Not a wallet with CRM bolted on. Not a CRM with payments bolted on. Lightning and Nostr are the foundation — user identity, payments, and communication are native from day one.
 
 ### Progressive self-custody
-Users start with zero friction (alias redirect to an existing address), graduate to a courtesy NWC wallet, then bring their own NWC-compatible wallet when ready. Sovereignty is a journey, not a gate.
+Users start with zero friction (alias redirect to an existing address), graduate to a courtesy NWC wallet via [lncurl](https://github.com/rolznz/lncurl), then bring their own NWC-compatible wallet when ready. Sovereignty is a journey, not a gate.
 
 | Stage | Friction | What happens |
 |-------|----------|-------------|
 | 1. Alias/Redirect | Zero | Lightning address redirects to user's existing address |
-| 2. Courtesy NWC | Low | Platform provides a temporary NWC wallet |
+| 2. Courtesy NWC | Low | Platform provisions a temporary NWC wallet via [lncurl](https://github.com/rolznz/lncurl) |
 | 3. Own NWC Wallet | Medium | User connects Alby, Primal, or any NWC wallet |
 | 4. Self-Hosted | Full sovereignty | User runs their own LaWallet NWC instance |
 
@@ -78,7 +78,7 @@ Three independent services, no shared databases:
 |---------|------|
 | **lawallet-web** | Next.js app — frontend, REST API, address resolution, dashboards, wallet |
 | **lawallet-listener** | NWC Payment Listener — monitors relays, dispatches webhooks |
-| **lawallet-nwc-proxy** | Courtesy NWC Proxy — provisions temporary wallets from providers |
+| **lawallet-web** (lncurl) | Courtesy NWC — provisions temporary wallets via [lncurl](https://github.com/rolznz/lncurl) |
 
 Deploy all three, or just `lawallet-web` to start. Each service scales independently.
 
@@ -103,7 +103,7 @@ Deploy all three, or just `lawallet-web` to start. Each service scales independe
 - CI/CD, Client SDK, React Hooks
 - Admin Dashboard (user management, activity monitor, logs)
 - User Dashboard (profile, NWC management, preferences)
-- Courtesy NWC Proxy service
+- Courtesy NWC via [lncurl](https://github.com/rolznz/lncurl)
 - NWC Payment Listener service
 - Full LUD-16/21/22 compliance, NIP-57 zaps
 - Documentation, deployment configurations (Vercel, Docker, Umbrel)

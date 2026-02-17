@@ -1,88 +1,87 @@
 ---
-title: "Courtesy NWC Proxy"
-description: "Provider-agnostic proxy for provisioning temporary NWC connection strings."
+title: "Courtesy NWC via lncurl"
+description: "Provisioning temporary NWC wallets using lncurl, powered by Alby Hub."
 ---
 
 ## Overview
 
-Lightweight standalone Node.js service that acts as a provider-agnostic proxy for provisioning temporary NWC connection strings. Does not hold funds.
+Courtesy NWC connections are provisioned via [**lncurl**](https://github.com/rolznz/lncurl) ([lncurl.lol](https://lncurl.lol)) — an agent-first custodial Lightning wallet service powered by [Alby Hub](https://github.com/getAlby/hub). A single HTTP call creates a wallet and returns a Nostr Wallet Connect (NWC) connection string.
 
-**Container**: `lawallet-nwc-proxy`
-**Ports**: 3003 (API), 3004 (health check)
-**Storage**: Own storage (connection tracking, provider credentials)
+**Provider**: [lncurl.lol](https://lncurl.lol)
+**Protocol**: NWC (NIP-47)
+**Cost**: 1 sat/hour per wallet (auto-deleted when balance can't cover upkeep)
 
 ---
 
 ## Purpose
 
-Enables users to upgrade from alias/redirect to NWC-connected addresses without needing their own wallet infrastructure. The proxy provisions temporary NWC connection strings from external providers and returns them to the user.
-
----
-
-## Independence
-
-- Own container, own storage
-- No access to lawallet-web database
-- No access to lawallet-listener
-- Communicates with lawallet-web via HTTP API only
-- Stateless proxy: does not hold or manage funds
-
----
-
-## Supported Providers
-
-| Provider | Protocol | Notes |
-|----------|----------|-------|
-| Alby Hub | OAuth + NWC | Provisions via Alby account API |
-| LNBits | API + NWC | Provisions via LNBits wallet API |
-| BTCPayServer | API + NWC | Provisions via BTCPay Greenfield API |
-| YakiHonne | NWC | Direct NWC provisioning |
-| Generic NWC | NWC string | Any provider exposing NWC connection strings |
+Enables users to upgrade from alias/redirect to NWC-connected addresses without needing their own wallet infrastructure. lncurl provisions temporary NWC wallets on demand — no accounts, no signups, just a single HTTP request.
 
 ---
 
 ## How It Works
 
-1. User requests a courtesy NWC connection from the proxy
-2. Proxy authenticates with the configured external NWC provider
-3. Proxy provisions a new NWC connection string from the provider
-4. Connection string is returned to the user and linked to their lightning address
+1. User requests a courtesy NWC wallet from the platform
+2. Platform calls `POST https://lncurl.lol` to provision a new wallet
+3. lncurl returns an NWC connection string (powered by Alby Hub)
+4. Connection string is linked to the user's lightning address
 5. Payments to the address now route via NWC instead of redirect
-6. User can replace the courtesy NWC with their own wallet at any time
+6. Wallet costs 1 sat/hour — auto-deleted when it can't pay
+7. User can replace the courtesy NWC with their own wallet at any time
 
 ---
 
-## API Endpoints
+## Why lncurl
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/connections` | POST | Provision new courtesy NWC connection |
-| `/connections/:id` | DELETE | Revoke courtesy NWC connection |
-| `/connections/:id` | GET | Get connection status |
-| `/providers` | GET | List available NWC providers |
-| `/health` | GET | Health check |
+| Feature | Benefit |
+|---------|---------|
+| **Single-command provisioning** | `curl -X POST https://lncurl.lol` — no accounts, no OAuth |
+| **NWC-native** | Returns an NWC connection string directly |
+| **Powered by Alby Hub** | Battle-tested Lightning infrastructure |
+| **Self-hostable** | Run your own lncurl instance for full sovereignty |
+| **Agent-first** | Designed for programmatic consumption |
+| **Pay-as-you-go** | 1 sat/hour — wallets auto-expire when empty |
 
-### POST /connections
+---
 
-**Request:**
-```json
-{
-  "provider": "alby",
-  "userId": "user_123",
-  "addressId": "addr_456"
-}
+## Integration
+
+### Provisioning a wallet
+
+```bash
+curl -X POST https://lncurl.lol
 ```
 
 **Response:**
 ```json
 {
-  "id": "conn_789",
-  "provider": "alby",
-  "nwcConnectionString": "nostr+walletconnect://...",
-  "status": "active",
-  "createdAt": "2026-03-15T10:00:00Z"
+  "connectionString": "nostr+walletconnect://...",
+  "balance": 0,
+  "costPerHour": 1
 }
 ```
+
+### From the platform
+
+The `lawallet-web` service calls lncurl when a user requests a courtesy NWC upgrade:
+
+```typescript
+const response = await fetch('https://lncurl.lol', { method: 'POST' });
+const { connectionString } = await response.json();
+
+// Link to the user's lightning address
+await linkNWCConnection(userId, connectionString);
+```
+
+---
+
+## Self-Hosting lncurl
+
+For full sovereignty, operators can self-host their own lncurl instance:
+
+- [**lncurl on GitHub**](https://github.com/rolznz/lncurl)
+- Requires an Alby Hub instance
+- Configure `LNCURL_URL` in `lawallet-web` environment to point to your instance
 
 ---
 
@@ -90,60 +89,29 @@ Enables users to upgrade from alias/redirect to NWC-connected addresses without 
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `PROVIDERS` | Enabled providers (comma-separated) | `alby` |
-| `ALBY_CLIENT_ID` | Alby Hub OAuth client ID | (required if alby enabled) |
-| `ALBY_CLIENT_SECRET` | Alby Hub OAuth client secret | (required if alby enabled) |
-| `LNBITS_URL` | LNBits instance URL | (required if lnbits enabled) |
-| `LNBITS_ADMIN_KEY` | LNBits admin API key | (required if lnbits enabled) |
-| `BTCPAY_URL` | BTCPayServer instance URL | (required if btcpay enabled) |
-| `BTCPAY_API_KEY` | BTCPayServer Greenfield API key | (required if btcpay enabled) |
-| `PORT` | Service port | `3003` |
-| `HEALTH_CHECK_PORT` | Health endpoint port | `3004` |
-| `LOG_LEVEL` | Minimum log level | `info` |
+| `LNCURL_URL` | lncurl instance URL | `https://lncurl.lol` |
+| `COURTESY_NWC_ENABLED` | Enable courtesy NWC provisioning | `true` |
 
 ---
 
 ## Design Principles
 
-- **Stateless proxy**: Does not hold funds, only provisions connection strings
-- **Provider-agnostic**: Unified API abstracting differences between providers
-- **Extensible**: Adding a new provider = implementing one adapter interface
-- **Independent**: No shared infrastructure with other services
-
----
-
-## Provider Adapter Interface
-
-Each provider implements a common interface:
-
-```typescript
-interface NWCProvider {
-  name: string;
-  provision(userId: string): Promise<NWCConnection>;
-  revoke(connectionId: string): Promise<void>;
-  status(connectionId: string): Promise<ConnectionStatus>;
-}
-```
-
----
-
-## Tech Stack
-
-- **Runtime**: Node.js (TypeScript)
-- **Logging**: pino (JSON structured)
-- **Container**: Dedicated Docker image
+- **Zero-friction provisioning**: One HTTP call, no accounts
+- **NWC-native**: Direct NWC connection strings, no protocol translation
+- **Self-hostable**: Run your own lncurl for full control
+- **Ephemeral by design**: Wallets auto-expire, incentivizing users to graduate to own wallets
 
 ---
 
 ## React Hook Integration
 
-The frontend consumes this service via the `useCourtesyNWC` hook:
+The frontend consumes courtesy NWC via the `useCourtesyNWC` hook:
 
 ```typescript
 const { provision, revoke, status, isLoading, error } = useCourtesyNWC();
 
-// Provision a new connection
-const connection = await provision({ provider: 'alby' });
+// Provision a new courtesy wallet via lncurl
+const connection = await provision();
 
 // Check status
 const currentStatus = await status(connection.id);

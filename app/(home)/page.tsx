@@ -418,11 +418,11 @@ export default function HomePage() {
       {/* ── Architecture overview ────────────────────────────── */}
       <section className="max-w-4xl mx-auto px-4 pb-24">
         <h2 className="text-2xl font-bold text-center mb-2">
-          Three Independent Services
+          Two Services + lncurl
         </h2>
         <p className="text-center text-sm text-fd-muted-foreground mb-8">
-          No shared database. No shared filesystem. Each deploys, scales, and
-          updates independently.
+          No shared database. No shared filesystem. Independent services +
+          external courtesy NWC via lncurl.
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {[
@@ -439,9 +439,9 @@ export default function HomePage() {
               color: "#26A69A",
             },
             {
-              name: "lawallet-nwc-proxy",
-              port: "3003/3004",
-              desc: "Provisions temporary NWC connections from external providers.",
+              name: "lncurl",
+              port: "external",
+              desc: "Agent-first courtesy NWC wallets via lncurl.lol, powered by Alby Hub.",
               color: "#4DB6AC",
             },
           ].map((s) => (
@@ -459,7 +459,7 @@ export default function HomePage() {
                 {s.name}
               </div>
               <div className="text-xs text-fd-muted-foreground font-mono mb-3">
-                Port {s.port}
+                {s.port === "external" ? "External service" : `Port ${s.port}`}
               </div>
               <p className="text-sm text-fd-muted-foreground">{s.desc}</p>
             </div>

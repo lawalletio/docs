@@ -32,7 +32,7 @@ Two packages provide typed access to the LaWallet NWC backend:
 ### Delivered
 
 - Month 2: Core SDK (auth, addresses, redirect, NWC, webhooks)
-- Month 3: Courtesy NWC methods
+- Month 3: Courtesy NWC methods (lncurl integration)
 - Month 5: LUD-21/22, redirect, zap methods
 - Month 6: Full documentation + API reference
 
@@ -59,7 +59,7 @@ Two packages provide typed access to the LaWallet NWC backend:
 | `useAuth` | JWT + Nostr login, session state, logout | 2 |
 | `useWebhooks` | Subscribe, unsubscribe, list active hooks | 2 |
 | `useWallet` | Balance, send, receive, NWC status | 2 |
-| `useCourtesyNWC` | Provision/revoke courtesy NWC from proxy | 3 |
+| `useCourtesyNWC` | Provision/revoke courtesy NWC via [lncurl](https://github.com/rolznz/lncurl) | 3 |
 | `useZap` | Send/receive zaps, verify receipts | 5 |
 | `useVerify` | Payment settlement status (LUD-21) | 5 |
 | `useRedirect` | Address alias/redirect configuration | 5 |
@@ -260,6 +260,6 @@ export default function App() {
 | Month | SDK Milestone | Hooks Milestone |
 |-------|---------------|-----------------|
 | 2 | Core: auth, addresses, redirect, NWC, webhooks. npm publish. | 7 base hooks. Published as @lawallet-nwc/react. |
-| 3 | Frontend + Courtesy NWC Proxy consume SDK. | Add `useCourtesyNWC`. |
+| 3 | Frontend + lncurl courtesy NWC consume SDK. | Add `useCourtesyNWC`. |
 | 5 | Add LUD-21/22, redirect, zap methods. | Add `useZap`, `useVerify`, `useRedirect`. Update `useWebhooks`. |
 | 6 | Full docs + API reference. | Full docs + usage examples. |

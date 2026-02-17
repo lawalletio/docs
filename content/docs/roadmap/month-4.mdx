@@ -1,6 +1,6 @@
 ---
-title: "Month 4: User Dashboard + Courtesy NWC Proxy"
-description: "Enhancement phase: user-facing dashboard, NWC proxy service, wallet polish."
+title: "Month 4: User Dashboard + Courtesy NWC (lncurl)"
+description: "Enhancement phase: user-facing dashboard, lncurl courtesy NWC integration, wallet polish."
 ---
 
 **Period:** April 5 - May 5, 2026
@@ -9,14 +9,14 @@ description: "Enhancement phase: user-facing dashboard, NWC proxy service, walle
 
 ## Summary
 
-Build the user-facing dashboard for profile and identity management, deploy the Courtesy NWC Proxy as an independent service, and polish the existing wallet interface.
+Build the user-facing dashboard for profile and identity management, integrate [lncurl](https://github.com/rolznz/lncurl) for courtesy NWC wallet provisioning, and polish the existing wallet interface.
 
 ---
 
 ## Goals
 
 - Build the User Dashboard (primary deliverable)
-- Build and deploy Courtesy NWC Proxy as independent container
+- Integrate [lncurl](https://github.com/rolznz/lncurl) for courtesy NWC wallet provisioning
 - Complete frontend wallet redesign
 - Implement white-label customization
 - Continue E2E testing
@@ -46,7 +46,7 @@ The User Dashboard is a dedicated area where users manage their profile, identit
 - View current lightning address (`user@domain.com`)
 - View resolution method: alias/redirect, courtesy NWC, or own NWC
 - Configure and change redirect target (for alias users)
-- Request courtesy NWC upgrade (via `useCourtesyNWC` hook)
+- Request courtesy NWC upgrade via [lncurl](https://github.com/rolznz/lncurl) (via `useCourtesyNWC` hook)
 - Connect own NWC wallet (paste NWC connection string)
 - View resolution priority and active method
 
@@ -73,34 +73,23 @@ The User Dashboard is a dedicated area where users manage their profile, identit
 
 ---
 
-## Courtesy NWC Proxy Service (New Container)
+## Courtesy NWC via lncurl
 
 ### Overview
 
-Standalone Node.js service in its own Docker container. Provisions temporary NWC connection strings from external providers. See [Courtesy NWC Proxy](../architecture/nwc-proxy) for full specification.
+Instead of building a custom proxy container, courtesy NWC wallets are provisioned via [**lncurl**](https://github.com/rolznz/lncurl) ([lncurl.lol](https://lncurl.lol)) — an agent-first custodial Lightning wallet powered by Alby Hub. A single HTTP POST creates a wallet and returns an NWC connection string. See [Courtesy NWC via lncurl](../architecture/nwc-proxy) for full specification.
 
-### Provider Adapters
+### Integration
 
-- Alby Hub (OAuth + NWC) — builds on existing `albyhub.ts` integration
-- LNBits (API + NWC)
-- BTCPayServer (Greenfield API + NWC)
-- YakiHonne (NWC)
-- Generic NWC (any provider exposing NWC connection strings)
-
-### API Endpoints
-
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/connections` | POST | Provision new courtesy NWC connection |
-| `/connections/:id` | GET | Get connection status |
-| `/connections/:id` | DELETE | Revoke courtesy NWC connection |
-| `/providers` | GET | List available NWC providers |
-| `/health` | GET | Health check |
+- `lawallet-web` calls `POST https://lncurl.lol` to provision a new wallet
+- Returns NWC connection string directly — no accounts, no OAuth
+- Wallets cost 1 sat/hour, auto-deleted when empty
+- Self-hostable: operators can run their own lncurl instance
 
 ### React Hook
 
-- `useCourtesyNWC` hook in frontend consuming proxy API
-- Connection status, provider selection, provision/revoke flows
+- `useCourtesyNWC` hook in frontend consuming lncurl via `lawallet-web` API
+- Connection status, provision/revoke flows
 
 ---
 
@@ -154,8 +143,8 @@ The wallet already has: login (nsec/extension/create), balance display, send dia
 |-------------|----------|----------|
 | User Dashboard | Profile, npub, address config, redirect, NWC management working | P0 |
 | NIP-05 | Platform serves `.well-known/nostr.json`, npub resolution works | P0 |
-| Courtesy NWC Proxy | Container running, 2+ providers working | P0 |
-| `useCourtesyNWC` | Hook working with proxy service | P0 |
+| Courtesy NWC (lncurl) | lncurl integration working, provision/revoke flows | P0 |
+| `useCourtesyNWC` | Hook working with lncurl integration | P0 |
 | Wallet polish | Payment history, receive interface, improved NWC flow | P1 |
 | White-label | Logo, colors, CSS injection working | P1 |
 | Landing page | Editable via admin, renders correctly | P2 |

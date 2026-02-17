@@ -5,7 +5,7 @@ description: "Expansion phase: LUD-16/21/22, NIP-57 zaps, payment listener servi
 
 **Period:** May 5 - June 5, 2026
 **Status:** Planned
-**Depends on:** Month 4 (User Dashboard + Courtesy NWC Proxy)
+**Depends on:** Month 4 (User Dashboard + Courtesy NWC via lncurl)
 
 ## Summary
 
@@ -109,7 +109,7 @@ Standalone long-running Node.js process in its own Docker container. Monitors NW
 
 - Own storage for event logs and delivery tracking
 - No dependency on Next.js app database
-- No dependency on Courtesy NWC Proxy
+- No dependency on courtesy NWC (lncurl)
 - Communicates with Next.js app via WebSocket only
 
 ### Configuration

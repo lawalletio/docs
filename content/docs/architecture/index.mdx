@@ -5,7 +5,7 @@ description: "Three independent containerized services with no shared infrastruc
 
 ## Overview
 
-LaWallet NWC is composed of **three fully independent, containerized services**. Each runs in its own Docker container with its own database/storage. There is no shared infrastructure between services. They communicate exclusively via HTTP APIs and WebSocket events.
+LaWallet NWC is composed of **two fully independent, containerized services** plus an external courtesy wallet provider ([lncurl](https://github.com/rolznz/lncurl)). Each service runs in its own Docker container with its own database/storage. There is no shared infrastructure between services. They communicate exclusively via HTTP APIs and WebSocket events.
 
 ---
 
@@ -15,7 +15,7 @@ LaWallet NWC is composed of **three fully independent, containerized services**.
 |-----------|---------|-------|---------|
 | `lawallet-web` | Next.js Application | 3000 | Own PostgreSQL (Prisma) |
 | `lawallet-listener` | NWC Payment Listener | 3001 (WS), 3002 (health) | Own storage |
-| `lawallet-nwc-proxy` | Courtesy NWC Proxy | 3003, 3004 (health) | Own storage |
+| External | [lncurl](https://github.com/rolznz/lncurl) (Courtesy NWC) | — | Managed by lncurl |
 
 ---
 
@@ -61,22 +61,23 @@ Standalone microservice monitoring NWC relays for incoming payments.
 - Exponential backoff retry (3 attempts) for webhook delivery
 - Dead letter queue for permanently failed deliveries
 - Own storage for event logs and delivery tracking
-- No dependency on Next.js app database or Courtesy NWC Proxy
+- No dependency on Next.js app database or courtesy NWC (lncurl)
 
 See: [NWC Payment Listener](./nwc-listener)
 
 ---
 
-## lawallet-nwc-proxy (Courtesy NWC Proxy)
+## Courtesy NWC via lncurl
 
-Lightweight service provisioning temporary NWC connections from external providers.
+Temporary NWC wallets provisioned via [**lncurl**](https://github.com/rolznz/lncurl) ([lncurl.lol](https://lncurl.lol)).
 
-- Stateless proxy: does not hold funds, only provisions connection strings
-- Provider-agnostic: unified API abstracting Alby Hub, LNBits, BTCPayServer, YakiHonne, generic NWC
-- Own container, own storage for connection tracking
-- No access to other services' databases
+- Single HTTP POST to provision a new NWC wallet
+- Powered by Alby Hub — battle-tested Lightning infrastructure
+- No custom proxy container needed — lncurl is an external service
+- Self-hostable: run your own lncurl instance for full sovereignty
+- Pay-as-you-go: 1 sat/hour per wallet, auto-deleted when empty
 
-See: [Courtesy NWC Proxy](./nwc-proxy)
+See: [Courtesy NWC via lncurl](./nwc-proxy)
 
 ---
 
@@ -105,7 +106,7 @@ See: [Courtesy NWC Proxy](./nwc-proxy)
 | Priority | Method | Description |
 |----------|--------|-------------|
 | 1 | Own NWC Connection | User connected their own NWC wallet |
-| 2 | Courtesy NWC | Temporary connection via Courtesy NWC Proxy |
+| 2 | Courtesy NWC | Temporary wallet via [lncurl](https://github.com/rolznz/lncurl) |
 | 3 | Alias / Redirect | Redirects to external lightning address |
 
 ---
@@ -114,8 +115,8 @@ See: [Courtesy NWC Proxy](./nwc-proxy)
 
 | Platform | Containers | Notes |
 |----------|------------|-------|
-| Vercel | web only | Listener + Proxy deployed separately |
+| Vercel | web only | Listener deployed separately, lncurl is external |
 | Netlify | web only | Same as Vercel |
-| Umbrel | All 3 | Full app store package |
-| Start9 | All 3 | Embassy package |
-| Docker Compose | All 3 | Independent containers + reverse proxy |
+| Umbrel | web + listener | Full app store package, lncurl is external |
+| Start9 | web + listener | Embassy package, lncurl is external |
+| Docker Compose | web + listener | Independent containers + reverse proxy |
