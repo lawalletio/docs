@@ -1,19 +1,17 @@
 ---
 title: "NWC Payment Listener"
-description: "Standalone microservice monitoring NWC relays for incoming payment events."
+description: "Planned microservice for monitoring NWC relays and dispatching webhook notifications."
 ---
 
 ## Overview
 
-Standalone Node.js microservice that monitors NWC relays for incoming payment events and dispatches webhook notifications.
+This page describes a planned service, not code that exists in the current `lawallet-nwc` repository.
 
-**Container**: `lawallet-listener`
-**Ports**: 3001 (WebSocket), 3002 (health check)
-**Storage**: Own storage (event logs, delivery tracking)
+The repo does not currently include a `lawallet-listener` process, webhook-delivery models, or payment-history APIs. LUD-22 delivery and relay monitoring remain roadmap work.
 
 ---
 
-## Responsibilities
+## Planned Responsibilities
 
 - Subscribe to NWC relays for NIP-47 `payment_received` events
 - Match incoming payments to registered lightning addresses
@@ -23,17 +21,13 @@ Standalone Node.js microservice that monitors NWC relays for incoming payment ev
 
 ---
 
-## Independence
+## Why This Page Exists
 
-- Own storage for event logs and delivery tracking
-- No dependency on lawallet-web database
-- No dependency on courtesy NWC (lncurl)
-- Communicates with lawallet-web via WebSocket events only
-- Can be restarted without data loss (stateless design)
+The roadmap includes this service as the event-processing companion to `lawallet-web`. Keeping the design notes here is useful, but it should be read as target architecture rather than current implementation.
 
 ---
 
-## Payment Detection Flow
+## Planned Payment Detection Flow
 
 1. Subscribe to NWC relays listed in configuration
 2. Monitor NIP-47 `payment_received` events per connected wallet
@@ -45,7 +39,7 @@ Standalone Node.js microservice that monitors NWC relays for incoming payment ev
 
 ---
 
-## Webhook Delivery
+## Planned Webhook Delivery
 
 - **Method**: POST
 - **Content-Type**: `application/json`
@@ -56,7 +50,7 @@ Standalone Node.js microservice that monitors NWC relays for incoming payment ev
 
 ---
 
-## Resilience
+## Planned Runtime Behavior
 
 - Auto-reconnection on relay disconnection with exponential backoff
 - Graceful shutdown on SIGTERM/SIGINT
@@ -66,7 +60,7 @@ Standalone Node.js microservice that monitors NWC relays for incoming payment ev
 
 ---
 
-## Configuration
+## Planned Configuration
 
 | Variable | Description | Default |
 |----------|-------------|---------|
@@ -79,18 +73,6 @@ Standalone Node.js microservice that monitors NWC relays for incoming payment ev
 
 ---
 
-## Tech Stack
+## Current Repo Note
 
-- **Runtime**: Node.js (TypeScript)
-- **Protocol**: NIP-47 (Nostr Wallet Connect)
-- **Logging**: pino (JSON structured)
-- **Container**: Dedicated Docker image
-
----
-
-## Testing
-
-- Integration tests with mocked NWC relay
-- Webhook delivery tests with mock HTTP endpoints
-- Retry and dead letter queue tests
-- Reconnection behavior tests
+The current repo only contains the Next.js application. There are no listener-specific source files, tests, or deployment artifacts yet.
