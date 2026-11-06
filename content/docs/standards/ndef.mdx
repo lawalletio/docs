@@ -1,0 +1,29 @@
+---
+title: NDEF + URI Record
+description: How a link is stored on a tag.
+---
+
+An NDEF message is a list of records. LaWallet cares about one kind: a **URI record** (TNF well-known, type `U`). Its first byte is a prefix code, and the rest is the URI.
+
+| Prefix byte | Expands to |
+|-------------|------------|
+| `0x00` | nothing (full URI follows, e.g. `lnurlw://…`, `lightning:…`) |
+| `0x03` | `http://` |
+| `0x04` | `https://` |
+
+What LaWallet reads from a tag:
+
+| Payload | Means |
+|---------|-------|
+| `lnurlw://…` | [Withdraw](/docs/standards/lud-03), e.g. a [Boltcard](/docs/standards/boltcard) |
+| `lnurlp://…`, `https://…` | LNURL pay or a lightning address link |
+| `lightning:lnbc…` | A [BOLT11](/docs/standards/bolt11) invoice, e.g. from a POS |
+
+Text records (type `T`) holding the same links are accepted too.
+
+On a [Type 4 tag](/docs/standards/android-hce) the message lives in file `E104`, prefixed by its 2-byte length.
+
+<Cards>
+  <Card title="NDEF spec" href="https://nfc-forum.org/build/specifications/data-exchange-format-ndef-technical-specification/" description="NFC Forum" />
+  <Card title="URI Record spec" href="https://nfc-forum.org/build/specifications/uri-record-type-definition-technical-specification/" description="NFC Forum" />
+</Cards>

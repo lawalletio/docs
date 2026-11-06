@@ -1,0 +1,64 @@
+---
+title: Standards
+description: Every open protocol LaWallet speaks, and which app supports it.
+---
+
+## Receiving
+
+<Cards>
+  <Card title="LUD-16 · Lightning Address" href="/docs/standards/lud-16" description="Email-like identifier" />
+  <Card title="LUD-21 · Verify" href="/docs/standards/lud-21" description="Synchronous payment verification" />
+  <Card title="NIP-57 · Zaps" href="/docs/standards/nip-57" description="Asynchronous payment verification" />
+  <Card title="LUD-12 · Comments" href="/docs/standards/lud-12" description="A message with the payment" />
+  <Card title="LUD-06 · Image + Description" href="/docs/standards/lud-06" description="What the payer sees" />
+  <Card title="LUD-22 · Webhooks (Draft)" href="/docs/standards/lud-22" description="Webhook payment verification" />
+  <Card title="BOLT11 · Invoice" href="/docs/standards/bolt11" description="Regular invoice" />
+  <Card title="BOLT12 · Offers (Soon)" href="/docs/standards/bolt12" description="Reusable invoice, custom amount" />
+</Cards>
+
+## NFC
+
+<Cards>
+  <Card title="LUD-03 · withdrawRequest" href="/docs/standards/lud-03" description="Pull funds with an invoice" />
+  <Card title="Boltcard" href="/docs/standards/boltcard" description="Tap-to-pay NFC card" />
+  <Card title="Android HCE" href="/docs/standards/android-hce" description="Phone acts as a tag" />
+  <Card title="Android Reader Mode" href="/docs/standards/android-reader-mode" description="Open app reads every tap" />
+  <Card title="NDEF + URI Record" href="/docs/standards/ndef" description="How links live on a tag" />
+</Cards>
+
+## Nostr
+
+<Cards>
+  <Card title="NIP-47 · Nostr Wallet Connect" href="/docs/standards/nip-47" description="Wallet over relays" />
+  <Card title="NIP-07 · Browser Extension" href="/docs/standards/nip-07" description="Sign in with an extension" />
+  <Card title="NIP-46 · Remote Signer" href="/docs/standards/nip-46" description="Sign in with a bunker" />
+  <Card title="NIP-05 · Identity" href="/docs/standards/nip-05" description="name@domain → pubkey" />
+</Cards>
+
+## Support
+
+✅ supported · 🧪 draft · 🔜 soon · — not used
+
+| Standard | Platform | Android | iOS | POS |
+|----------|:-:|:-:|:-:|:-:|
+| [LUD-16](/docs/standards/lud-16) | ✅ | ✅ | ✅ | ✅ |
+| [LUD-21](/docs/standards/lud-21) | ✅ | ✅ | ✅ | ✅ |
+| [NIP-57](/docs/standards/nip-57) | ✅ | — | — | — |
+| [LUD-12](/docs/standards/lud-12) | ✅ | ✅ | ✅ | — |
+| [LUD-06](/docs/standards/lud-06) | ✅ | ✅ | ✅ | ✅ |
+| [LUD-22](/docs/standards/lud-22) | 🧪 | — | — | — |
+| [BOLT11](/docs/standards/bolt11) | ✅ | ✅ | ✅ | ✅ |
+| [BOLT12](/docs/standards/bolt12) | 🔜 | 🔜 | 🔜 | 🔜 |
+| [LUD-03](/docs/standards/lud-03) | ✅ | ✅ | ✅ | ✅ |
+| [Boltcard](/docs/standards/boltcard) | ✅ | ✅ | ✅ | ✅ |
+| [Android HCE](/docs/standards/android-hce) | — | ✅ | — | ✅ |
+| [Reader Mode](/docs/standards/android-reader-mode) | — | ✅ | ✅ ¹ | ✅ |
+| [NDEF + URI](/docs/standards/ndef) | — | ✅ | ✅ | ✅ |
+| [NIP-47](/docs/standards/nip-47) | ✅ | ✅ | ✅ | — |
+| [NIP-07](/docs/standards/nip-07) | ✅ | — ² | — | — |
+| [NIP-46](/docs/standards/nip-46) | ✅ | — | ✅ | — |
+| [NIP-05](/docs/standards/nip-05) | ✅ | — | — | ✅ |
+
+¹ Core NFC reader session. ² Uses an external signer app (NIP-55) instead.
+
+Platform = [lawallet-nwc](https://github.com/lawalletio/lawallet-nwc).

@@ -1,0 +1,14 @@
+---
+title: NIP-46 · Remote Signer
+description: Sign in with a signer running on another device (a bunker).
+---
+
+import { Flow } from '@/components/flow';
+
+The app connects with a `bunker://…` or `nostrconnect://…` URI and sends signing requests over relays. The key stays on the signer.
+
+<Flow steps={[['App', 'sign_event'], ['Relay'], ['Signer (bunker)', 'signed event'], ['App']]} />
+
+**In LaWallet:** supported by the platform SDK and the iOS wallet login.
+
+<Card title="NIP-46 spec" href="https://github.com/nostr-protocol/nips/blob/master/46.md" description="github.com/nostr-protocol/nips" />

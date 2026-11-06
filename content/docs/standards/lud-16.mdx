@@ -1,0 +1,14 @@
+---
+title: LUD-16 · Lightning Address
+description: An email-like identifier you can pay.
+---
+
+import { Flow } from '@/components/flow';
+
+`alice@domain.com` is a pointer to an [LUD-06](/docs/standards/lud-06) pay endpoint at `https://domain.com/.well-known/lnurlp/alice`.
+
+<Flow steps={[['Payer', 'GET /.well-known/lnurlp/alice'], ['Platform', 'payRequest'], ['Payer', 'callback?amount='], ['Platform', 'BOLT11'], ['Payer']]} />
+
+**In LaWallet:** every user gets an address on your domain. The platform serves it, and can forward it (alias/redirect) to another address.
+
+<Card title="LUD-16 spec" href="https://github.com/lnurl/luds/blob/luds/16.md" description="github.com/lnurl/luds" />

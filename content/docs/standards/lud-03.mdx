@@ -1,0 +1,14 @@
+---
+title: LUD-03 · withdrawRequest
+description: Pull money from a link by handing it an invoice.
+---
+
+import { Flow } from '@/components/flow';
+
+An `lnurlw://` link returns `{ tag: "withdrawRequest", callback, k1, minWithdrawable, maxWithdrawable }`. You make an invoice and send it to `callback?k1=…&pr=…`. The service pays it.
+
+<Flow steps={[['POS / Wallet', 'GET lnurlw'], ['Server', 'withdrawRequest'], ['POS / Wallet', 'callback?k1&pr'], ['Server', 'pays invoice'], ['Done']]} />
+
+**In LaWallet:** this is what a [Boltcard](/docs/standards/boltcard) tap triggers. The wallets also accept `lnurlw` links to claim funds.
+
+<Card title="LUD-03 spec" href="https://github.com/lnurl/luds/blob/luds/03.md" description="github.com/lnurl/luds" />

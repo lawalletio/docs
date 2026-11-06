@@ -1,0 +1,18 @@
+---
+title: Android Reader Mode
+description: The open app gets every tap directly, with no system chooser.
+---
+
+import { Flow } from '@/components/flow';
+
+`NfcAdapter.enableReaderMode()` hands each tag straight to the foreground app. While it's on, the phone only reads: card emulation is off, so two phones can't both play "tag".
+
+<Flow steps={[['Card / sticker / POS', 'tag'], ['Wallet (reader mode)', 'NDEF URL'], ['LNURL or BOLT11']]} />
+
+**In LaWallet:** the Android wallet turns it on while open and reads Boltcards, stickers and POS invoices. The POS uses it to read cards. On iOS the wallet does the same with a Core NFC NDEF reader session.
+
+<Cards>
+  <Card title="enableReaderMode" href="https://developer.android.com/reference/android/nfc/NfcAdapter" description="developer.android.com" />
+  <Card title="Advanced NFC" href="https://developer.android.com/develop/connectivity/nfc/advanced-nfc" description="Tag technologies and reader mode" />
+  <Card title="iOS Core NFC" href="https://developer.apple.com/documentation/corenfc" description="developer.apple.com" />
+</Cards>
