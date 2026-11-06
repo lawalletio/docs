@@ -1,0 +1,18 @@
+---
+title: LUD-06 · Image + Description
+description: The payRequest itself, plus metadata the payer sees before paying.
+---
+
+LUD-06 is the base LNURL-pay flow. Its `metadata` is a JSON array of entries:
+
+| Entry | Shows |
+|-------|-------|
+| `text/plain` | Short description |
+| `image/png;base64` / `image/jpeg;base64` | Avatar |
+| `text/identifier` | The lightning address |
+
+The invoice's description hash commits to this metadata, so the wallet knows it's paying the right thing.
+
+**In LaWallet:** wallets render the avatar and description on the pay screen.
+
+<Card title="LUD-06 spec" href="https://github.com/lnurl/luds/blob/luds/06.md" description="github.com/lnurl/luds" />

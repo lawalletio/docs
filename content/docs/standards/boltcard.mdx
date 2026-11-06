@@ -1,0 +1,22 @@
+---
+title: Boltcard
+description: An NFC card that pays with a tap.
+---
+
+import { Flow } from '@/components/flow';
+
+A Boltcard is an NTAG424 DNA chip whose [NDEF](/docs/standards/ndef) URL changes on every tap (SUN). Each read gives `lnurlw://…?p=…&c=…`:
+
+- `p`: the card UID and a tap counter, encrypted.
+- `c`: a MAC proving the card made it.
+
+The server decrypts `p`, checks `c` and that the counter went up (no replays), then answers with an [LUD-03](/docs/standards/lud-03) withdraw.
+
+<Flow steps={[['Card', 'NDEF URL'], ['POS', 'GET lnurlw?p&c'], ['Platform', 'withdrawRequest'], ['POS', 'invoice'], ['Platform', 'pays'], ['Done']]} />
+
+**In LaWallet:** the platform issues and manages cards, the POS charges them, and the wallets can read them too.
+
+<Cards>
+  <Card title="Boltcard spec" href="https://github.com/boltcard/boltcard/blob/main/docs/SPEC.md" description="github.com/boltcard/boltcard" />
+  <Card title="Boltcard project" href="https://github.com/boltcard/boltcard" description="Card programming and server" />
+</Cards>

@@ -1,0 +1,14 @@
+---
+title: LUD-21 · Verify
+description: Synchronous payment verification. Poll a URL until the invoice is paid.
+---
+
+import { Flow } from '@/components/flow';
+
+The pay callback returns a `verify` URL next to the invoice. `GET` it to get `{ settled, preimage, pr }`.
+
+<Flow steps={[['Payer / POS', 'callback'], ['Platform', 'pr + verify'], ['Payer / POS', 'GET verify (poll)'], ['settled: true']]} />
+
+**In LaWallet:** the POS polls it to show "paid", and the wallets use it to confirm a claim. For push-style notifications see [NIP-57](/docs/standards/nip-57) or [LUD-22](/docs/standards/lud-22).
+
+<Card title="LUD-21 spec" href="https://github.com/lnurl/luds/blob/luds/21.md" description="github.com/lnurl/luds" />

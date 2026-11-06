@@ -1,0 +1,14 @@
+---
+title: NIP-47 · Nostr Wallet Connect
+description: Control a Lightning wallet over Nostr relays.
+---
+
+import { Flow } from '@/components/flow';
+
+A connection string `nostr+walletconnect://<wallet pubkey>?relay=…&secret=…` lets an app send encrypted requests (kind `23194`) to a wallet and get responses (kind `23195`). Methods include `pay_invoice`, `make_invoice`, `get_balance` and `lookup_invoice`.
+
+<Flow steps={[['App', 'kind 23194 pay_invoice'], ['Relay'], ['Wallet', 'kind 23195 result'], ['App']]} />
+
+**In LaWallet:** NWC is the payment backend. Each user's address is backed by a wallet the platform reaches over NWC, and the mobile wallets connect the same way.
+
+<Card title="NIP-47 spec" href="https://github.com/nostr-protocol/nips/blob/master/47.md" description="github.com/nostr-protocol/nips" />

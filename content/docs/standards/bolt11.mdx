@@ -1,0 +1,12 @@
+---
+title: BOLT11 · Invoice
+description: The regular single-use Lightning invoice.
+---
+
+`lnbc…`: amount, payment hash, description, expiry, signed by the receiver. One invoice, one payment.
+
+Over QR or NFC it travels as the URI `lightning:lnbc…`.
+
+**In LaWallet:** every receive flow ends in a BOLT11 invoice, and the POS shows it as QR and as an [NFC tag](/docs/standards/android-hce).
+
+<Card title="BOLT11 spec" href="https://github.com/lightning/bolts/blob/master/11-payment-encoding.md" description="github.com/lightning/bolts" />

@@ -1,0 +1,40 @@
+---
+title: Android HCE
+description: Host Card Emulation. A phone app answers APDUs as if it were an NFC card.
+---
+
+import { Flow } from '@/components/flow';
+
+An app declares a `HostApduService` with the AIDs it handles. When a reader `SELECT`s one of them, Android routes the APDUs to the app.
+
+## POS: invoice as a tag
+
+While a charge is on screen, the POS emulates an NFC Forum **Type 4 tag** with one [NDEF](/docs/standards/ndef) URI record: `lightning:<bolt11>`. Any wallet that reads tags can pay it.
+
+<Flow steps={[['Wallet (reader)', 'SELECT NDEF AID'], ['POS (HCE)', 'lightning:lnbc…'], ['Wallet', 'pays']]} />
+
+| Step | APDU | Meaning |
+|------|------|---------|
+| 1 | `SELECT D2760000850101` | NDEF application |
+| 2 | `SELECT E103` + `READ BINARY` | Capability Container |
+| 3 | `SELECT E104` + `READ BINARY` | NDEF file: 2-byte length + message |
+
+No charge on screen means the POS answers `6A82` (not found), so phones see no tag.
+
+## Wallet: wake on tap
+
+A POS also polls for cards, so with the wallet closed it may read the phone instead. The wallet registers the NDEF AIDs only to wake up:
+
+<Flow steps={[['POS', 'SELECT NDEF AID'], ['Wallet (HCE)', '6A82 + open app'], ['Wallet (reader)', 'reads invoice'], ['POS']]} />
+
+| AID | Why |
+|-----|-----|
+| `D2760000850101` | NDEF v2, what readers SELECT first |
+| `D2760000850100` | NDEF v1, Android's fallback after v2 fails |
+
+Once open, [reader mode](/docs/standards/android-reader-mode) takes over and reads the POS invoice.
+
+<Cards>
+  <Card title="Android HCE guide" href="https://developer.android.com/develop/connectivity/nfc/hce" description="developer.android.com" />
+  <Card title="Type 4 Tag spec" href="https://nfc-forum.org/build/specifications/type-4-tag-specification/" description="NFC Forum" />
+</Cards>
