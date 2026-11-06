@@ -1,82 +1,72 @@
 ---
 title: "Testing Strategy"
-description: "Testing pyramid with Vitest, MSW, React Testing Library, and Playwright."
+description: "Current testing setup in LaWallet NWC, plus planned E2E expansion."
 ---
 
-## Testing Pyramid
+## Current Status
 
-| Layer | Tool | Scope | Target Coverage |
-|-------|------|-------|-----------------|
-| Unit | Vitest | Hooks, utilities, SDK methods | 80% |
-| Component | React Testing Library + Vitest | UI components, hooks integration | 70% |
-| API | MSW + Vitest | API routes, middleware, auth | 90% |
-| Integration | Vitest + Prisma test utils | DB ops, NWC flows, redirect resolution | 70% |
-| E2E | Playwright | Multi-browser flows, visual regression | Critical paths |
-| Coverage | Vitest Coverage (c8/v8) | Overall codebase | 70% minimum |
+The current repo already has a solid Vitest-based test suite, but it is narrower than the full roadmap testing story.
+
+| Layer | Current Tooling | Status |
+|-------|------------------|--------|
+| Unit | Vitest | Current |
+| Component | React Testing Library + happy-dom | Current |
+| API | Vitest + MSW + route-level tests | Current |
+| Integration | Vitest + Prisma test utilities | Current |
+| Coverage | `vitest --coverage` | Current |
+| E2E | Playwright | Planned, not present in this repo yet |
 
 ---
 
 ## Unit Testing (Vitest)
 
-- Primary test runner for all unit and integration tests
-- React Testing Library with happy-dom environment
-- Coverage reporting via c8/v8
-- Target: 80% on hooks and utilities
+- Primary test runner for unit and integration tests
+- Used for auth helpers, validation, middleware, config, utilities, and logger behavior
+- Coverage reporting is available through `pnpm test:coverage`
 
 ---
 
 ## Component Testing (React Testing Library + Vitest)
 
-- Test UI components in isolation
-- Verify hook integration with components
-- Test user interactions and state changes
-- Target: 70% on component library
+- Available through React Testing Library with `happy-dom`
+- Best suited for isolated UI and interaction tests
+- The current repo is backend/API-heavy, so component coverage is lighter than the roadmap vision
 
 ---
 
-## API Testing (MSW)
+## API and Integration Testing
 
-- Mock Service Worker for API route mocking
-- Test NWC connection, lightning address, auth endpoints
-- Simulate payment callbacks
-- Test error handling and edge cases
-- Target: 90% on API routes
-
----
-
-## Integration Testing (Prisma Test Utils)
-
-- Isolated test database per test suite
-- Seeding scripts for reproducible test data
-- Transaction rollback between tests
-- Test NWC flows, alias/redirect resolution, address lifecycle
-- Target: 70% on integration paths
+- API routes are exercised with Vitest-based integration tests
+- MSW is available for mocking network interactions
+- Prisma test helpers support repeatable database-backed test flows
+- Current integration coverage includes auth, lightning addresses, cards, settings, remote connections, and related business logic
 
 ---
 
-## E2E Testing (Playwright)
+## Useful Commands
 
-### Multi-browser
+```bash
+pnpm test
+pnpm test:coverage
+pnpm lint
+pnpm typecheck
+```
 
-- Chrome, Firefox, Safari
-- Run against reimplemented components from month 3 onward
-- Visual regression baselines and updates
+---
 
-### Timeline
+## Planned E2E Work
 
-| Month | Scope |
-|-------|-------|
-| 3 | Multi-browser smoke tests, visual regression baseline, admin dashboard flows, alias setup |
-| 4 | User dashboard, profile/npub setup, redirect/NWC flows, visual regression updates |
-| 5 | Lightning compliance flows, webhook delivery, redirect resolution |
-| 6 | Deployment smoke tests, full regression across all 3 services |
+Playwright is still a roadmap item. When it lands, the expected focus areas are:
+
+- Admin and wallet smoke tests
+- User onboarding and NWC management flows
+- Visual regression on the eventual frontend surfaces
+- Deployment smoke coverage for the broader multi-service architecture
 
 ---
 
 ## CI/CD Integration
 
-- GitHub Actions workflow: lint → typecheck → test
-- PR status checks required for merge
-- Branch protection on main
-- Coverage upload to Codecov
-- Automated build verification on push
+- The repo already advertises CI in its README
+- The local script flow is centered on `lint`, `typecheck`, and `test`
+- E2E-specific CI steps should be added only once Playwright is actually introduced

@@ -1,19 +1,28 @@
 ---
 title: LaWallet NWC
-description: Open-source Lightning Address platform with Nostr Wallet Connect. Self-hostable, progressive self-custody.
+description: Current implementation, setup, and roadmap for LaWallet NWC.
 ---
 
 ## Welcome
 
-LaWallet NWC is an open-source Lightning + Nostr CRM for communities and companies. Connect your domain, deploy in minutes, and give your users lightning addresses, wallets, and Nostr identity under your brand.
+LaWallet NWC is a pre-alpha Next.js application for Lightning Address management, NFC card flows, and Nostr Wallet Connect.
+
+The current repository is focused on:
+
+- JWT session issuance backed by NIP-98 authentication
+- Lightning address assignment and LUD-16 pay responses for NWC-backed users
+- Card, card-design, settings, and remote-connection APIs
+- Optional Alby Hub sub-account provisioning during user creation
+
+The broader product vision in the roadmap still includes redirect-based onboarding, courtesy NWC provisioning, NIP-05, webhook delivery, and additional service containers. Those items are documented as planned work, not current behavior.
 
 ## Quick Links
 
-- [Getting Started](/docs/getting-started) — Vision, onboarding model, deployment
-- [Architecture](/docs/architecture) — System design and service topology
-- [Standards](/docs/standards) — LNURL, Nostr, Boltcard and NFC specs
-- [Guides](/docs/guides) — SDK, authentication, testing
-- [API Reference](/docs/api-reference) — REST API documentation
+- [Getting Started](/docs/getting-started) — Local setup and current app surface
+- [Architecture](/docs/architecture) — Current implementation and target topology
+- [Standards](/docs/standards) — LNURL, Nostr, Boltcard and NFC specs, with app support
+- [Guides](/docs/guides) — Current auth/testing docs and SDK roadmap notes
+- [API Reference](/docs/api-reference) — Current REST endpoints in `lawallet-nwc`
 - [Plugins](/docs/plugins) — Events, Badges, Commerce proposals
 - [Roadmap](/docs/roadmap) — 6-month development timeline
 

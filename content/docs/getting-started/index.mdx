@@ -1,6 +1,6 @@
 ---
 title: Getting Started
-description: Quick start guide for deploying and using LaWallet NWC.
+description: Quick start guide for running the current LaWallet NWC repository locally.
 ---
 
 ## Prerequisites
@@ -27,13 +27,15 @@ pnpm install
 3. Configure environment:
 
 ```bash
-cp .env.example .env.local
+cp .env.example .env
 ```
 
 4. Set up the database:
 
 ```bash
-npx prisma migrate dev
+pnpm prisma generate
+pnpm prisma migrate deploy
+pnpm prisma db seed
 ```
 
 5. Start the development server:
@@ -41,6 +43,18 @@ npx prisma migrate dev
 ```bash
 pnpm dev
 ```
+
+## Current App Surface
+
+The local repo currently exposes:
+
+- A landing page placeholder
+- An admin page placeholder
+- A wallet page placeholder
+- A larger REST API surface under `/api/*`
+- LUD-16 responses under `/api/lud16/[username]`
+
+Roadmap docs describe additional UI, `.well-known` endpoints, courtesy wallets, and webhook flows that are not implemented in this repo yet.
 
 ## Deployment Options
 
@@ -66,22 +80,23 @@ async function resolveLightningAddress(address: string) {
   const [username, domain] = address.split("@");
   if (!username || !domain) throw new Error("Invalid address format");
 
-  // Simulates GET /.well-known/lnurlp/{username}
+  // Simulates GET /api/lud16/{username}
   await new Promise(r => setTimeout(r, 600));
 
   return {
     status: "OK",
     tag: "payRequest",
-    callback: "https://" + domain + "/api/lnurlp/" + username + "/callback",
+    callback: "https://" + domain + "/api/lud16/" + username + "/cb",
     minSendable: 1000,
-    maxSendable: 100000000,
+    maxSendable: 1000000000,
     metadata: JSON.stringify([
-      ["text/plain", "Pay " + username + "@" + domain],
-      ["text/identifier", address],
+      ["text/plain", "Payment to @" + username + " on " + domain],
     ]),
-    commentAllowed: 255,
-    allowsNostr: true,
-    nostrPubkey: "npub1" + "a".repeat(58),
+    commentAllowed: 200,
+    payerData: {
+      name: { mandatory: false },
+      email: { mandatory: false },
+    },
   };
 }
 
@@ -146,5 +161,5 @@ export default function App() {
 ## Next Steps
 
 - Read the [Vision](./vision) to understand the project philosophy
-- Understand the [Onboarding model](./onboarding) for progressive self-custody
-- Explore the [Architecture](../architecture) for system design details
+- Understand the [Onboarding model](./onboarding) for the current flow and the longer-term target
+- Explore the [Architecture](../architecture) for current implementation details

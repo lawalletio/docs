@@ -1,11 +1,11 @@
 ---
 title: "lawallet-web"
-description: "Next.js application serving frontend, REST API, and lightning address resolution."
+description: "Current Next.js application in the repo, including the REST API and LUD-16 endpoints."
 ---
 
 ## Overview
 
-The main application serving the frontend, REST API, admin dashboard, user dashboard, wallet interface, and lightning address resolution endpoints.
+The main application in `lawallet-nwc` serves the frontend, REST API, and LUD-16 lightning address resolution.
 
 **Container**: `lawallet-web`
 **Port**: 3000
@@ -16,27 +16,28 @@ The main application serving the frontend, REST API, admin dashboard, user dashb
 ## Responsibilities
 
 - Serve frontend (React + Tailwind/shadcn)
-- Expose REST API for all platform operations
-- Resolve lightning addresses via `.well-known/lnurlp` (LUD-16)
-- Serve NIP-05 identity via `.well-known/nostr.json`
-- Handle alias/redirect resolution (proxy LNURL-pay to target)
-- Admin dashboard
-- User dashboard (profile, npub, address config, preferences)
-- Wallet interface (payments, NWC connection)
-- Authentication (JWT + Nostr)
-- White-label customization
-- Customizable landing page
+- Expose REST API for cards, card designs, users, settings, JWT auth, and remote connections
+- Resolve lightning addresses via `/api/lud16/[username]`
+- Optionally create Alby Hub sub-accounts during user creation
+- Serve placeholder landing, admin, and wallet pages
+
+Not implemented in the current repo:
+
+- `.well-known/lnurlp` and `.well-known/nostr.json`
+- Redirect-based address resolution
+- Webhook management and payment history APIs
+- A completed user dashboard UI
 
 ---
 
 ## Tech Stack
 
-- **Framework**: Next.js 14 (App Router)
+- **Framework**: Next.js 16 (App Router)
 - **Language**: TypeScript
 - **Frontend**: React + Tailwind CSS + shadcn/ui
 - **Database**: PostgreSQL via Prisma ORM
-- **NWC**: Alby JS SDK
-- **Testing**: Vitest + React Testing Library + Playwright + MSW
+- **NWC**: `@getalby/sdk`
+- **Testing**: Vitest + React Testing Library + MSW
 - **Logging**: pino
 
 ---
@@ -47,48 +48,64 @@ The main application serving the frontend, REST API, admin dashboard, user dashb
 |------|---------|
 | `/app` | Next.js App Router pages and API routes |
 | `/app/admin` | Admin dashboard pages |
-| `/app/dashboard` | User dashboard pages |
 | `/app/wallet` | Wallet interface |
-| `/app/.well-known` | LUD-16 + NIP-05 endpoints |
 | `/app/api` | REST API routes |
 | `/components` | Shared React components |
-| `/hooks` | React hooks (consuming SDK) |
 | `/lib` | Shared utilities, types, constants |
-| `/providers` | React context providers |
 | `/prisma` | Database schema, migrations, seeds |
 
 ---
 
 ## Key Endpoints
 
-### Lightning Address
+### Authentication
 
-- `GET /.well-known/lnurlp/:username` — LUD-16 resolution (with alias/redirect support)
-- `GET /.well-known/nostr.json?name=:username` — NIP-05 identity verification
+- `POST /api/jwt` — Exchange a NIP-98 request for a JWT
+- `GET /api/jwt` — Validate an existing JWT
+- `GET /api/jwt/protected` — Example protected JWT route
+- `POST /api/jwt/protected` — Example protected JWT route
 
-### API
+### Users and Addresses
 
-- `POST /api/auth/login` — JWT login
-- `POST /api/auth/refresh` — Refresh token
-- `POST /api/auth/nostr` — Nostr login (NIP-07/NIP-46)
-- `GET /api/addresses` — List addresses
-- `POST /api/addresses` — Create address
-- `GET /api/addresses/:id` — Get address details
-- `PUT /api/addresses/:id` — Update address
-- `DELETE /api/addresses/:id` — Delete address
-- `PUT /api/addresses/:id/redirect` — Set redirect target
-- `GET /api/users` — List users (admin)
-- `GET /api/users/:id` — Get user details
-- `PUT /api/users/:id` — Update user
-- `GET /api/webhooks` — List webhooks
-- `POST /api/webhooks` — Register webhook
-- `DELETE /api/webhooks/:id` — Remove webhook
-- `GET /api/payments` — Payment history
+- `GET /api/users/me` — Load or create the current user
+- `PUT /api/users/:id/lightning-address` — Assign or replace a username
+- `PUT /api/users/:id/nwc` — Store an NWC URI for the user
+- `GET /api/lightning-addresses` — Admin list of lightning addresses
+- `GET /api/lightning-addresses/counts` — Admin counts
+- `GET /api/lightning-addresses/relays` — Relay information
+- `GET /api/lud16/:username` — LUD-16 payRequest for NWC-backed users
+- `GET /api/lud16/:username/cb` — LUD-16 callback
+
+### Cards and Card Designs
+
+- `GET /api/cards` and `POST /api/cards` — Card listing and creation
+- `GET /api/cards/:id` and `DELETE /api/cards/:id` — Card detail and deletion
+- `GET /api/cards/:id/write` — Card write payload
+- `GET /api/cards/:id/scan` — LNURL-withdraw style card scan response
+- `GET /api/cards/:id/scan/cb` — Card scan callback
+- `GET /api/cards/otc/:otc` — OTC lookup
+- `POST /api/cards/otc/:otc/activate` — OTC activation
+- `GET /api/card-designs/list` — Card designs
+- `GET /api/card-designs/count` — Card-design count
+- `GET /api/card-designs/get/:id` — Card-design detail
+- `POST /api/card-designs/import` — Import card designs
+
+### Admin and Device Flows
+
+- `GET /api/settings` and `POST /api/settings` — Settings management
+- `GET /api/admin/assign` and `POST /api/admin/assign` — Admin assignment
+- `GET /api/root/assign` and `POST /api/root/assign` — Root assignment
+- `GET /api/remote-connections/:externalDeviceKey` — Remote connection bootstrap
+- `POST /api/remote-connections/:externalDeviceKey/cards` — Remote card initialization
 
 ---
 
-## Communication with Other Services
+## External Integrations
 
-- **lawallet-listener**: Receives WebSocket events for real-time payment updates
-- **lncurl**: HTTP POST to [lncurl.lol](https://lncurl.lol) (or self-hosted instance) to provision courtesy NWC wallets
-- No shared database or filesystem with other services
+- **Alby Hub**: Optional REST integration used during user creation when automatic provisioning is enabled
+- **PostgreSQL**: Primary datastore
+
+Planned but not currently wired into this repo:
+
+- `lncurl` courtesy-wallet provisioning
+- `lawallet-listener` payment listener integration

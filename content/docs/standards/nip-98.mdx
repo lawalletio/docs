@@ -1,0 +1,10 @@
+---
+title: NIP-98 · HTTP Auth
+description: Sign an HTTP request with your Nostr key to log in.
+---
+
+The client signs a kind `27235` event holding the request's URL and method, and sends it as `Authorization: Nostr <base64 event>`. The server checks the signature, URL, method and timestamp.
+
+**In LaWallet:** the platform exchanges a NIP-98 signed request for a JWT session. The wallets and POS sign it with the user's key or signer ([NIP-07](/docs/standards/nip-07), [NIP-46](/docs/standards/nip-46)).
+
+<Card title="NIP-98 spec" href="https://github.com/nostr-protocol/nips/blob/master/98.md" description="github.com/nostr-protocol/nips" />
